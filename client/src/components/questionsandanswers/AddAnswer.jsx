@@ -1,6 +1,15 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, Modal, closeButton, Form, Row, Col, FloatingLabel, Image} from 'react-bootstrap';
+import {
+  Button,
+  Modal,
+  closeButton,
+  Form,
+  Row,
+  Col,
+  FloatingLabel,
+  Image,
+} from 'react-bootstrap';
 import API_KEY from '../../config/config.js';
 import AddAnswerPreview from './AddAnswerPreview.jsx';
 
@@ -18,13 +27,13 @@ const AddAnswer = (props) => {
 
   const onFileChange = (e) => {
     const files = Array.from(e.target.files);
-    if(files.length > 5) {
+    if (files.length > 5) {
       setPhotomax(true);
     } else {
       files.forEach((image) => {
         uploadImage(image);
       });
-    };
+    }
   };
   const uploadImage = (file) => {
     const formData = new FormData();
@@ -34,15 +43,15 @@ const AddAnswer = (props) => {
       method: 'POST',
       body: formData,
     })
-    .then(res => res.json())
-    .then((res) => {
-      setphotos((photos) => [...photos, res.secure_url]);
-    });
-  }
+      .then((res) => res.json())
+      .then((res) => {
+        setphotos((photos) => [...photos, res.secure_url]);
+      });
+  };
 
   const postAnswer = (e) => {
     const form = e.currentTarget;
-    if(form.checkValidity() === false) {
+    if (form.checkValidity() === false) {
       e.preventDefault();
       e.stopPropagation();
     }
@@ -51,13 +60,20 @@ const AddAnswer = (props) => {
       body: body,
       name: name,
       email: email,
-      photos: photos
-    }
-    if(body.length > 1 && name.length > 1 && email.length > 1 && email.includes('@')) {
-      axios.post(`https://app-hrsei-api.herokuapp.com/api/fec2/hr-lax/qa/questions/${props.question_id}/answers`, answer_info, {
-        headers: { 'Authorization': `${API_KEY}` }
-      })
-        .then(response => {
+      photos: photos,
+    };
+    if (
+      body.length > 1 &&
+      name.length > 1 &&
+      email.length > 1 &&
+      email.includes('@')
+    ) {
+      axios
+        .post(
+          `http://54.219.72.194/qa/questions/${props.question_id}/answers`,
+          answer_info
+        )
+        .then((response) => {
           alert('your answer is successfully post.');
           props.getAllAnswers();
           handleClose();
@@ -65,44 +81,62 @@ const AddAnswer = (props) => {
         .catch((err) => console.error(err));
     } else {
       alert('You must enter the all mandatory field.');
-    };
+    }
   };
 
   return (
     <div id='add_answer_button'>
       {' '}
-      <Button className='answer_add' variant="outline-secondary" size='sm' onClick={handleShow}>ADD AN ANSWER</Button>
+      <Button
+        className='answer_add'
+        variant='outline-secondary'
+        size='sm'
+        onClick={handleShow}
+      >
+        ADD AN ANSWER
+      </Button>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>
             <h3 id='question_modal_title'>Submit your Answer</h3>
-            <h6 id='question_modal_subtitle'>{props.product_name}: {props.question_body}</h6>
+            <h6 id='question_modal_subtitle'>
+              {props.product_name}: {props.question_body}
+            </h6>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form novalidatie="true" validated={validated}>
+          <Form novalidatie='true' validated={validated}>
             <Row className='mb-3'>
               <Form.Group as={Col} controlId='formGridQuestion'>
                 <Form.Label>
-                  Post your answer here<span id='q_mandatory'>*</span></Form.Label>
+                  Post your answer here<span id='q_mandatory'>*</span>
+                </Form.Label>
                 <Form.Control
                   as='textarea'
                   type='text'
                   name='body'
                   placeholder='Please enter a answer.'
-                  style={{ height: '100px'}}
+                  style={{ height: '100px' }}
                   maxLength='1000'
                   onChange={(e) => setBody(e.target.value)}
                   className='add_answer_body_input'
-                  value={body} required
-                  ></Form.Control>
-                  <Form.Control.Feedback type='invalid'>Please enter text for answer</Form.Control.Feedback>
+                  value={body}
+                  required
+                ></Form.Control>
+                <Form.Control.Feedback type='invalid'>
+                  Please enter text for answer
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row className='mb-3'>
               <Form.Group as={Col} controlId='formGridNickname'>
-                <Form.Label>What is your nickname?<span id='q_mandatory'>*</span></Form.Label>
-                <FloatingLabel controlId='floatingnickname' label='Example: jackson543!'>
+                <Form.Label>
+                  What is your nickname?<span id='q_mandatory'>*</span>
+                </Form.Label>
+                <FloatingLabel
+                  controlId='floatingnickname'
+                  label='Example: jackson543!'
+                >
                   <Form.Control
                     type='text'
                     name='name'
@@ -110,19 +144,28 @@ const AddAnswer = (props) => {
                     maxLength='60'
                     onChange={(e) => setName(e.target.value)}
                     className='add_answer_name_input'
-                    value={name} required
+                    value={name}
+                    required
                   ></Form.Control>
-                  <Form.Control.Feedback type='invalid'>Please enter a username<span id='q_mandatory'>*</span></Form.Control.Feedback>
+                  <Form.Control.Feedback type='invalid'>
+                    Please enter a username<span id='q_mandatory'>*</span>
+                  </Form.Control.Feedback>
                 </FloatingLabel>
                 <Form.Text className='text-muted'>
-                  For privacy reasons, do not use your full name or email address
+                  For privacy reasons, do not use your full name or email
+                  address
                 </Form.Text>
               </Form.Group>
             </Row>
             <Row className='mb-3'>
               <Form.Group as={Col} controlId='formGridNickname'>
-                <Form.Label>What is your email?<span id='q_mandatory'>*</span></Form.Label>
-                <FloatingLabel controlId='floatingemail' label='Example: jack@email.com'>
+                <Form.Label>
+                  What is your email?<span id='q_mandatory'>*</span>
+                </Form.Label>
+                <FloatingLabel
+                  controlId='floatingemail'
+                  label='Example: jack@email.com'
+                >
                   <Form.Control
                     type='email'
                     name='email'
@@ -131,9 +174,12 @@ const AddAnswer = (props) => {
                     onChange={(e) => setEmail(e.target.value)}
                     className='add_answer_email_input'
                     value={email}
-                    pattern='[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$' required
+                    pattern='[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$'
+                    required
                   ></Form.Control>
-                  <Form.Control.Feedback type='invalid'>Please enter a valid email</Form.Control.Feedback>
+                  <Form.Control.Feedback type='invalid'>
+                    Please enter a valid email
+                  </Form.Control.Feedback>
                 </FloatingLabel>
                 <Form.Text className='text-muted'>
                   For authentication reasons, you will not be emailed
@@ -147,17 +193,31 @@ const AddAnswer = (props) => {
                   type='file'
                   accept='image/png, image/jpeg'
                   className='add_answer_photo_input'
-                  onChange={onFileChange} multiple/>
+                  onChange={onFileChange}
+                  multiple
+                />
                 {photomax && <span>Sorry, maximum 5 photos</span>}
-                <br/>
+                <br />
                 <AddAnswerPreview photos={photos} />
               </Form.Group>
             </Row>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button className='addA_cancel_btn' variant='secondary' onClick={() => handleClose()}>Cancel</Button>
-          <Button className='addA_submit_btn' type='submit' onClick={postAnswer}>Submit</Button>
+          <Button
+            className='addA_cancel_btn'
+            variant='secondary'
+            onClick={() => handleClose()}
+          >
+            Cancel
+          </Button>
+          <Button
+            className='addA_submit_btn'
+            type='submit'
+            onClick={postAnswer}
+          >
+            Submit
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

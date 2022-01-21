@@ -2,4 +2,5 @@ package-lock.json
 node_modules/
 config.js
 client/dist/bundle.js
+client/dist/bundle.js.map
 coverage/

@@ -1,14 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard.jsx';
 import Card from 'react-bootstrap/Card';
-import axios from 'axios';
-import API_KEY from '../../config/config.js';
+// import axios from 'axios';
+// import API_KEY from '../../config/config.js';
 
 // sample data
 // import getProducts from './data/sampleDataProducts.js';
 
 function OutfitCarousel(props) {
-
   const [grid, setGrid] = useState([]);
   const [pos, setPos] = useState(0);
   let scrollPos = pos;
@@ -21,7 +20,7 @@ function OutfitCarousel(props) {
   }, [props.outfits]);
 
   const getOutfits = () => {
-    setGrid(props.outfits)
+    setGrid(props.outfits);
   };
 
   const checkPos = (width) => {
@@ -29,20 +28,20 @@ function OutfitCarousel(props) {
     let rightButton = document.getElementById('outfitRight');
     if (scrollPos <= 0) {
       scrollPos = 0;
-      if(leftButton !== ' ') {
-        setLButton(' ')
+      if (leftButton !== ' ') {
+        setLButton(' ');
       }
     } else {
-      if(leftButton !== '<'){
+      if (leftButton !== '<') {
         setLButton('<');
       }
     }
     if (scrollPos >= width) {
-      if(rightButton !== ' ') {
-        setRButton(' ')
+      if (rightButton !== ' ') {
+        setRButton(' ');
       }
     } else {
-      if(rightButton !== '>') {
+      if (rightButton !== '>') {
         setRButton('>');
       }
     }
@@ -54,7 +53,7 @@ function OutfitCarousel(props) {
     element.scrollTo({
       top: 0,
       left: (scrollPos -= scrollDistance),
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
     checkPos();
   };
@@ -65,56 +64,95 @@ function OutfitCarousel(props) {
       element.scrollTo({
         top: 0,
         left: (scrollPos += scrollDistance),
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
-    checkPos((element.scrollWidth - element.clientWidth));
+    checkPos(element.scrollWidth - element.clientWidth);
   };
 
   const resetPos = () => {
     setPos(0);
-  }
+  };
 
   return (
     <div className='carousel' key={props.uniqueid + 'outfit'}>
       <div className='carouselContainer'>
-        <div className="carouselBox">
-        <div className="carouselItem">
-          <Card style={{width: '18rem', backgroundColor: 'beige'}} id='addItemToTheCloset' onClick={() => {
-            let duplicateOutfit = false;
-            let currentOutfits = JSON.parse(window.localStorage.fecCloset);
-            console.log(currentOutfits);
-            for(let i = 0; i < currentOutfits.length; i++) {
-              if(currentOutfits[i].id === props.featuredProd.id){
-                duplicateOutfit = true;
-              }
-            }
-            if(!duplicateOutfit) {
-              let newList = [...currentOutfits, props.featuredProd];
-              window.localStorage.setItem('fecCloset', JSON.stringify(newList));
-              props.getYourOutfits();
-            } else {
-              alert("Item is already in your outfit list!")
-            }
-          }}>
-            <Card.Img variant="top" src={'images/plus-icon-vector.jpeg'} style={styles.cardImage}/>
-            <Card.Body style={styles.cardText}>
-              <Card.Title>ADD TO YOUR OUTFITS</Card.Title>
-            </Card.Body>
-          </Card>
+        <div className='carouselBox'>
+          <div className='carouselItem'>
+            <Card
+              style={{ width: '18rem', backgroundColor: 'beige' }}
+              id='addItemToTheCloset'
+              onClick={() => {
+                let duplicateOutfit = false;
+                let currentOutfits = JSON.parse(window.localStorage.fecCloset);
+                console.log(currentOutfits);
+                for (let i = 0; i < currentOutfits.length; i++) {
+                  if (currentOutfits[i].id === props.featuredProd.id) {
+                    duplicateOutfit = true;
+                  }
+                }
+                if (!duplicateOutfit) {
+                  let newList = [...currentOutfits, props.featuredProd];
+                  window.localStorage.setItem(
+                    'fecCloset',
+                    JSON.stringify(newList)
+                  );
+                  props.getYourOutfits();
+                } else {
+                  alert('Item is already in your outfit list!');
+                }
+              }}
+            >
+              <Card.Img
+                variant='top'
+                src={'images/plus-icon-vector.jpeg'}
+                style={styles.cardImage}
+              />
+              <Card.Body style={styles.cardText}>
+                <Card.Title>ADD TO YOUR OUTFITS</Card.Title>
+              </Card.Body>
+            </Card>
+          </div>
+          {grid.length === 0
+            ? ''
+            : grid.map((product, index) => (
+                <div
+                  className='carouselItem'
+                  key={index}
+                  onClick={() => {
+                    window.scrollTo({
+                      top: 0,
+                    });
+                  }}
+                >
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    featuredProd={props.featuredProd}
+                    icon='remove'
+                    checkPos={checkPos}
+                    removeOutfit={props.removeOutfit}
+                    chooseProduct={props.chooseProduct}
+                    resetPos={resetPos}
+                    uniqueid={props.uniqueid}
+                  />
+                </div>
+              ))}
         </div>
-          {grid.length === 0 ? '' : grid.map((product, index) => (
-            <div className="carouselItem" key={index} onClick={() => {
-              window.scrollTo({
-                top: 0
-              });
-            }}>
-              <ProductCard key={product.id} product={product} featuredProd={props.featuredProd} icon='remove' checkPos={checkPos} removeOutfit={props.removeOutfit} chooseProduct={props.chooseProduct} resetPos={resetPos} uniqueid={props.uniqueid}/>
-            </div>
-          ))}
+        <div
+          className='moveLeft slideButton'
+          onClick={scrollLeft}
+          id='outfitLeft'
+        >
+          {leftButton}
         </div>
-        <div className="moveLeft slideButton" onClick={scrollLeft} id="outfitLeft">{leftButton}</div>
-        <div className="moveRight slideButton" onClick={scrollRight} id="outfitRight">{rightButton}</div>
+        <div
+          className='moveRight slideButton'
+          onClick={scrollRight}
+          id='outfitRight'
+        >
+          {rightButton}
+        </div>
       </div>
     </div>
   );
@@ -126,13 +164,13 @@ const styles = {
   cardImage: {
     maxWidth: '100%',
     height: '300px',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   cardText: {
     whiteSpace: 'normal',
-    textAlign: 'left'
+    textAlign: 'left',
   },
   noMargin: {
-    marginBottom: 0
-  }
-}
+    marginBottom: 0,
+  },
+};
